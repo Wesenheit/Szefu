@@ -3,6 +3,7 @@ import discord
 from discord import client
 from discord.team import Team
 from discord.ext import commands,tasks
+from ytd import *
 
 class Client:
 
@@ -10,6 +11,7 @@ class Client:
     bot = commands.Bot(command_prefix='!')
     home='songs/'
 
+    
     @bot.command(name='join',help='dołącz do kanału')
     async def join(ctx):
         if not ctx.message.author.voice:
@@ -42,12 +44,28 @@ class Client:
         else:
             await ctx.send("Bot niepołączony")
 
+    @bot.command(name='play_yt',help="puść plik mp3")
+    async def play_yt(ctx,name):
+        if Client.connected:
+            server = ctx.message.guild
+            voice_channel = server.voice_client
+            if voice_channel.is_playing():
+                await ctx.send("Obecnie grany jest już utwór")
+            else:
+                try:
+                    filename = await YTDLSource.from_url(name, loop=Client.bot.loop)
+                    voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename))
+                    await ctx.send('**Leci teraz:** {}'.format(name))
+                except:
+                    await ctx.send("Utwór nieznaleziony")
+        else:
+            await ctx.send("Bot niepołączony")
 
     @bot.command(name='pause', help='zapauzuj piosenkę')
     async def pause(ctx):
         voice_client = ctx.message.guild.voice_client
         if voice_client.is_playing():
-            await voice_client.pause()
+            voice_client.pause()
         else:
             await ctx.send("obecnie nie jest grany żaden utwór")
 
@@ -55,14 +73,14 @@ class Client:
     async def resume(ctx):
         voice_client = ctx.message.guild.voice_client
         if voice_client.is_paused():
-            await voice_client.resume()
+            voice_client.resume()
         else:
-            await ctx.send("")
+            await ctx.send("Nic nie jest obecnie grane")
     @bot.command(name='stop', help='zatrzymaj piosenkę')
     async def stop(ctx):
         voice_client = ctx.message.guild.voice_client
         if voice_client.is_playing():
-            await voice_client.stop()
+            voice_client.stop()
         else:
             await ctx.send("obecnie nie jest grany żaden utwór")
 
