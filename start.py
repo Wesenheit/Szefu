@@ -1,3 +1,6 @@
 from client import Client
 
-Client.start("kod.d")
+try:
+    Client.start("kod.d")
+except KeyboardInterrupt:
+    pass
