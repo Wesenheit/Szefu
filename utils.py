@@ -20,7 +20,7 @@ def cleanup():
         os.remove(file)
 
 def size():
-    return sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f))
+    return sum(os.path.getsize(f) for f in list() if os.path.isfile(f))
 
 
 async def autocleanup(ctx,n):

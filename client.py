@@ -120,8 +120,11 @@ class Client:
                 temp=temp[:-len(a)]
                 await ctx.author.send(temp)
                 temp=a
-        await ctx.author.send(temp)
-            
+        if len(temp)>0:
+            await ctx.author.send(temp)
+        else:
+            await ctx.author.send("Nie ma obecnie żadnych piosenek zapisanych")
+                        
     def start(file):
         with open(file,"r") as f:
             name=f.readline()
