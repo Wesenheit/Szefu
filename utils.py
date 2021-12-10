@@ -26,5 +26,5 @@ def size():
 async def autocleanup(ctx,n):
     if size()>n:
         cleanup()
-    await ctx.send("Przekroczono maksymalny rozmiar piosenek, trwa ich usuwanie")
+        await ctx.send("Przekroczono maksymalny rozmiar piosenek, trwa ich usuwanie")
     
