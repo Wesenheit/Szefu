@@ -1,18 +1,22 @@
 from os import name
+from sys import platform
+import asyncio
+from time import sleep
 import discord
 from discord import client
 from discord.team import Team
 from discord.ext import commands,tasks
 from ytd import *
 from utils import *
-
+from Queue import *
 class Client:
 
     connected=False
     bot = commands.Bot(command_prefix='!')
     home='songs/'
     max_size_of_songs=100000000000000000
-    
+    queue=None
+
     @bot.command(name='join',help='dołącz do kanału')
     async def join(ctx):
         if not ctx.message.author.voice:
@@ -124,7 +128,60 @@ class Client:
             await ctx.author.send(temp)
         else:
             await ctx.author.send("Nie ma obecnie żadnych piosenek zapisanych")
-                        
+
+    @bot.command(name="kolejka",help="utwórz kolejkę")
+    async def kolejka(ctx):
+        if Client.queue==None:
+            Client.queue=Queue()
+            await ctx.send("Kolejka utworzona")
+        else:
+            await ctx.send("Kolejka już istnieje")
+        
+    @bot.command(name="dodaj",help="dodaj piosenkę do kolejki")
+    async def dodaj(ctx,name):
+        if Client.queue==None:
+            await ctx.send("Kolejka nie istnieje")
+        else:
+            Client.queue.add(name)
+    
+    @bot.command(name="show",help="Pokaż kolejkę")
+    async def show(ctx):
+        if Client.queue==None:
+            await ctx.send("Kolejka nie istnieje")
+        else:
+            await ctx.send(Client.queue.list())
+    @bot.command(name="play_q",help="puść kolejkę")
+    async def play_q(ctx):
+        server = ctx.message.guild
+        voice_channel = server.voice_client
+        if Client.queue==None:
+            await ctx.send("Kolejka nie istnieje")
+        else:
+            await Client.queue.updateplay(Client.bot.loop)
+            if Client.queue.current==None:
+                await ctx.send("Koniec kolejki")
+                
+            else:
+                print(Client.queue.currname)
+                voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=Client.queue.currname))
+                await ctx.send('**Leci teraz:** {}'.format(Client.queue.current))
+                await Client.queue.downnex(Client.bot.loop)
+                while True:
+                    if voice_channel.is_playing():
+                        await asyncio.sleep(2)
+                    else:
+                        await Client.play_q(ctx)
+    @bot.command(name="dkolejka",help="usuń kolejkę")
+    async def dkolejka(ctx):
+        Client.queue=None
+    
+    @bot.command(name="remove",help='usuń n-ty element z kolejki')
+    async def remove(ctx,n):
+        if Client.queue==None:
+            await ctx.send("Kolejka nie istnieje")
+        else:
+            Client.queue.remove(n)
+    
     def start(file):
         with open(file,"r") as f:
             name=f.readline()
