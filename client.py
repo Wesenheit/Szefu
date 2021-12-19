@@ -4,6 +4,7 @@ import asyncio
 from time import sleep
 import discord
 from discord import client
+from discord.ext.commands.core import wrap_callback
 from discord.team import Team
 from discord.ext import commands,tasks
 from ytd import *
@@ -14,7 +15,7 @@ class Client:
     connected=False
     bot = commands.Bot(command_prefix='!')
     home='songs/'
-    max_size_of_songs=100000000000000000
+    max_size_of_songs=1048576*1024
     queue=None
 
     @bot.command(name='join',help='dołącz do kanału')
@@ -150,18 +151,16 @@ class Client:
             await ctx.send("Kolejka nie istnieje")
         else:
             await ctx.send(Client.queue.list())
-    @bot.command(name="play_q",help="puść kolejkę")
-    async def play_q(ctx):
+    
+    async def wrapper(ctx):
+        await autocleanup(ctx,Client.max_size_of_songs)
         server = ctx.message.guild
         voice_channel = server.voice_client
         if Client.queue==None:
             await ctx.send("Kolejka nie istnieje")
         else:
             await Client.queue.updateplay(Client.bot.loop)
-            if Client.queue.current==None:
-                await ctx.send("Koniec kolejki")
-                
-            else:
+            if not Client.queue.current==None:
                 print(Client.queue.currname)
                 voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=Client.queue.currname))
                 await ctx.send('**Leci teraz:** {}'.format(Client.queue.current))
@@ -170,7 +169,19 @@ class Client:
                     if voice_channel.is_playing():
                         await asyncio.sleep(2)
                     else:
-                        await Client.play_q(ctx)
+                        await Client.wrapper(ctx)
+            else:
+                await ctx.send("Koniec kolejki")
+                raise ValueError
+    
+    @bot.command(name="play_q",help="puść kolejkę")
+    async def play_q(ctx):
+        try:
+            await Client.wrapper(ctx)
+        except ValueError:
+            pass
+
+
     @bot.command(name="dkolejka",help="usuń kolejkę")
     async def dkolejka(ctx):
         Client.queue=None

@@ -9,13 +9,14 @@ class Queue:
     async def updateplay(self,loop):
         if self.lista:
             self.current=self.lista.pop(0)
+            if self.next is not None:
+                self.currname=self.next
+            else:
+                self.currname=await YTDLSource.from_url(self.current,loop=loop)
+
         else:
             self.current=None
-            print("xd")
-        if self.next is not None:
-            self.currname=self.next
-        else:
-            self.currname=await YTDLSource.from_url(self.current,loop=loop)
+
     async def downnex(self,loop):
         if self.lista:
             self.next=await YTDLSource.from_url(self.lista[0],loop=loop)
