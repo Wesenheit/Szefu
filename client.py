@@ -160,7 +160,10 @@ class Client:
             await ctx.send("Kolejka nie istnieje")
         else:
             await Client.queue.updateplay(Client.bot.loop)
-            if not Client.queue.current==None:
+            if Client.queue.current==None or Client.queue==None:
+                await ctx.send("Koniec kolejki")
+                raise ValueError
+            else:
                 print(Client.queue.currname)
                 voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=Client.queue.currname))
                 await ctx.send('**Leci teraz:** {}'.format(Client.queue.current))
@@ -170,9 +173,6 @@ class Client:
                         await asyncio.sleep(2)
                     else:
                         await Client.wrapper(ctx)
-            else:
-                await ctx.send("Koniec kolejki")
-                raise ValueError
     
     @bot.command(name="play_q",help="puść kolejkę")
     async def play_q(ctx):

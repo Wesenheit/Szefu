@@ -16,6 +16,7 @@ class Queue:
 
         else:
             self.current=None
+            self.next=None
 
     async def downnex(self,loop):
         if self.lista:
