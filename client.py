@@ -158,9 +158,10 @@ class Client:
         voice_channel = server.voice_client
         if Client.queue==None:
             await ctx.send("Kolejka nie istnieje")
+            raise ValueError
         else:
             await Client.queue.updateplay(Client.bot.loop)
-            if Client.queue.current==None or Client.queue==None:
+            if Client.queue.current==None:
                 await ctx.send("Koniec kolejki")
                 raise ValueError
             else:
