@@ -202,10 +202,9 @@ class Client:
     
     @bot.event
     async def on_member_update(before, after):
-        game="minecraft"
-        if after.activity.lower()=game:
-            await.after.send("{}...\n nie graj proszę w {}".format(after.name,game))
-
+        game="klondike"
+        if game in after.activity.lower():
+            await after.send("{}...\n nie graj proszę w {}".format(after.name,game))
 
     def start(file):
         with open(file,"r") as f:
