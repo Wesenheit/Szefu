@@ -197,6 +197,7 @@ class Client:
     async def on_message(message):
         if "czy można" in message.content:
             await message.channel.send(file=discord.File('bosak.jpg'))
+        await bot.process_commands(message)
     
     def start(file):
         with open(file,"r") as f:
