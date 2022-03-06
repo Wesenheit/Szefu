@@ -193,7 +193,7 @@ class Client:
             await ctx.send("Kolejka nie istnieje")
         else:
             Client.queue.remove(n)
-    @Bot.event
+    @bot.event
     async def on_message(message):
         if "czy można" in message.content:
             await message.channel.send(file=discord.File('bosak.jpg'))
