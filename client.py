@@ -13,7 +13,7 @@ from Queue import *
 class Client:
 
     connected=False
-    bot = commands.Bot(command_prefix='!')
+    bot = commands.Bot(command_prefix='!',intents=discord.Intents().all())
     home='songs/'
     max_size_of_songs=1048576*1024
     queue=None
@@ -202,9 +202,10 @@ class Client:
     
     @bot.event
     async def on_member_update(before, after):
-        game="klondike"
-        if game in after.activity.lower():
-            await after.send("{}...\n nie graj proszę w {}".format(after.name,game))
+        game="League of Legends"
+        if after.activity is not None:
+            if game.lower() in after.activity.name.lower():
+                await after.send("{}...\n nie graj proszę w {}".format(after.name,game))
 
     def start(file):
         with open(file,"r") as f:
