@@ -200,6 +200,13 @@ class Client:
             await message.channel.send(file=discord.File('bosak.jpg'))
         await Client.bot.process_commands(message)
     
+    @bot.event
+    async def on_member_update(before, after):
+        game="minecraft"
+        if after.activity.lower()=game:
+            await.after.send("{}...\n nie graj proszę w {}".format(after.name,game))
+
+
     def start(file):
         with open(file,"r") as f:
             name=f.readline()
