@@ -21,7 +21,7 @@ class Client:
     @bot.command(name='join',help='dołącz do kanału')
     async def join(ctx):
         if not ctx.message.author.voice:
-            await ctx.send("{} nie połączony z rzadnym kanałem głosowym".format(ctx.message.author.name))
+            await ctx.send("{} nie połączony z żadnym kanałem głosowym".format(ctx.message.author.name))
             return
         else:
             channel = ctx.message.author.voice.channel
