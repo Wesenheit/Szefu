@@ -207,6 +207,23 @@ class Client:
             if game.lower() in after.activity.name.lower():
                 await after.send("{}...\n nie graj proszę w {}".format(after.name,game))
 
+
+    @bot.command(name="radio")
+    async def play(ctx, url):
+        if Client.connected:
+            server = ctx.message.guild
+            voice_channel = server.voice_client
+            if voice_channel.is_playing():
+                await ctx.send("Obecnie grany jest już utwór")
+            else:
+                try:
+                    voice_channel.play(discord.FFmpegPCMAudio(str(url)))
+                    await ctx.send('**radyjko**')
+                except:
+                    await ctx.send("Radio nieznalezione")
+        else:
+            await ctx.send("Bot niepołączony")
+
     def start(file):
         with open(file,"r") as f:
             name=f.readline()
